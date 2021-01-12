@@ -3,8 +3,8 @@ import * as d3 from "d3";
 import _ from "lodash";
 import * as chroma from "chroma-js";
 import "./Graph.css";
-import dataLoad from "./data/mal_scrape.json";
 
+const dataURL = "https://gist.githubusercontent.com/deaxmachina/f795176fbfd340cce82373d682cedd43/raw/124f2d14c04e30a7f74b6c04aab9b21e89f80d4c/mal_scrape_Jan8_limited.json";
 
 const Graph = ({width}) => {
 
@@ -44,19 +44,22 @@ const Graph = ({width}) => {
 
   /// Data load ///
   useEffect(() => {
-    // transform data into just {year: 2020, number_anime: 800}
-    const counts = _.countBy(dataLoad, 'air_year')
-    // transform data into required array of obj format
-    const countsList = []
-      for (const [year, count] of Object.entries(counts)) {
-        countsList.push({
-          year: year,
-          number_animes: count
-        })
-      };
-    const filteredCountsList = _.filter(countsList, function(o) { return o.year >= 1960 });
-    setData(filteredCountsList)
-    setAllData(dataLoad)
+    d3.json(dataURL).then(dataLoad => {
+      // transform data into just {year: 2020, number_anime: 800}
+      const counts = _.countBy(dataLoad, 'air_year')
+      // transform data into required array of obj format
+      const countsList = []
+        for (const [year, count] of Object.entries(counts)) {
+          countsList.push({
+            year: year,
+            number_animes: count
+          })
+        };
+      const filteredCountsList = _.filter(countsList, function(o) { return o.year >= 1960 });
+      setData(filteredCountsList)
+      setAllData(dataLoad)
+    })
+
   }, []);
 
   /// D3 Code ///
